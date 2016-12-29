@@ -12,7 +12,7 @@ I know of no other standard or convention for how else to translate such JSON.
 * [JSON for Modern C++](https://github.com/nlohmann/json)
 * [Boost](http://www.boost.org)
 
-### JSON2CSV has passed basic testing on:
+### Basic testing passed on:
 * Ubuntu 16.04
 * Windows 10
 
