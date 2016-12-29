@@ -37,6 +37,7 @@ const string Main::getResultsDirectory()
 
 void Main::deleteResultsDirectory()
 {
+#ifdef _WIN32
     SHFILEOPSTRUCT fileOperation;
     fileOperation.wFunc = FO_DELETE;
     fileOperation.pFrom = Main::getResultsDirectory().c_str();
@@ -47,11 +48,24 @@ void Main::deleteResultsDirectory()
     {
         throw std::runtime_error("Could not delete results directory");
     }
+#endif
+#ifndef _WIN32
+    std::stringstream s;
+    s << "rm -rf " << Main::getResultsDirectory().c_str();
+    system(s.str().c_str()); 
+#endif
 }
 
 void Main::createResultsDirectory()
 {
+#ifdef _WIN32
     mkdir(Main::getResultsDirectory().c_str());
+#endif
+#ifndef _WIN32
+    std::stringstream s;
+    s << "mkdir -p " << Main::getResultsDirectory().c_str();
+    system(s.str().c_str()); 
+#endif
 }
 
 const string Main::join(deque<string> strs, string delimiter)
