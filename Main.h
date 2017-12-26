@@ -18,6 +18,15 @@
     #include <direct.h>
 
 #endif
+#ifndef _WIN32
+
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <unistd.h>
+    #include <stdio.h>
+    #include <ftw.h>
+
+#endif
 
 #include <cstdlib>
 #include <fstream>

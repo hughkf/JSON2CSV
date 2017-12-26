@@ -35,6 +35,21 @@ const string Main::getResultsDirectory()
     return "TEMP";
 }
 
+int unlink_cb(const char *fpath, const struct stat *sb, int typeflag, struct FTW *ftwbuf)
+{
+    int rv = remove(fpath);
+
+    if (rv)
+        perror(fpath);
+
+    return rv;
+}
+
+int rmrf(char *path)
+{
+    return nftw(path, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
+}
+
 void Main::deleteResultsDirectory()
 {
 #ifdef _WIN32
@@ -50,9 +65,12 @@ void Main::deleteResultsDirectory()
     }
 #endif
 #ifndef _WIN32
-    std::stringstream s;
+    /* std::stringstream s;
     s << "rm -rf " << Main::getResultsDirectory().c_str();
-    system(s.str().c_str()); 
+    system(s.str().c_str()); */
+ 
+    rmrf((char *)Main::getResultsDirectory().c_str());
+
 #endif
 }
 
@@ -62,9 +80,16 @@ void Main::createResultsDirectory()
     mkdir(Main::getResultsDirectory().c_str());
 #endif
 #ifndef _WIN32
-    std::stringstream s;
+    /* std::stringstream s;
     s << "mkdir -p " << Main::getResultsDirectory().c_str();
-    system(s.str().c_str()); 
+    system(s.str().c_str()); */
+
+    struct stat st = {0};
+
+    if (stat(Main::getResultsDirectory().c_str(), &st) == -1) {
+        mkdir(Main::getResultsDirectory().c_str(), 0755);
+    }
+
 #endif
 }
 
@@ -109,8 +134,8 @@ void Main::mainDriver(char* inputFilePath, char* delimiter, char* nodeKey)
     
     deque<string>::iterator header;
     for(header = headers.begin(); header != headers.end(); ++header)
-        cout << (*header).substr(1) << ",";
-    cout << endl;
+        cout << "," << (*header).substr(1);
+    cout << "," << endl;
 
     //print CSV values
     Straightener* s = new Straightener(embeddedStrings, headers, delimiter);
